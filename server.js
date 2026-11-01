@@ -5,11 +5,17 @@ const fs = require('fs-extra');
 const path = require('path');
 
 const app = express();
-
-// تعديل المنفذ ليتوافق مع منصة Render ديناميكياً
 const PORT = process.env.PORT || 10000;
 
-app.use(express.static(__dirname));
+// إعدادات قراءة الواجهة وملفات الـ HTML لتعمل الصفحة الرئيسية مباشرة بدون خطأ
+app.use(express.static(path.join(__dirname)));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(fileUpload());
 
 app.post('/build-apk', async (req, res) => {
@@ -26,7 +32,7 @@ app.post('/build-apk', async (req, res) => {
         const projectDir = path.join(__dirname, 'tmp', `app_${buildId}`);
         const outputApkPath = path.join(__dirname, 'public', 'downloads', `app_${buildId}.apk`);
 
-        await fs.ensureDir(path.join(__dirname, 'public', 'downloads'));
+        await fs.ensureDir(path.dirname(outputApkPath));
 
         // 1. إنشاء مشروع Cordova جديد
         const createCmd = `npx cordova create "${projectDir}" "${pkgName}" "${appName}"`;
@@ -67,5 +73,7 @@ app.post('/build-apk', async (req, res) => {
     }
 });
 
-// تشغيل الخادم مع تحديد '0.0.0.0' ليتوافق تماماً مع استضافة Render
-app.listen(PORT, '0.0.0.0', () => console.log(`الخادم يعمل على المنفذ ${PORT}`));
+// تشغيل الخادم بالمنفذ الصحيح وربطه بالشبكة ليتوافق تماماً مع Render
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`الخادم يعمل على المنفذ ${PORT}`);
+});
