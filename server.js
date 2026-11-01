@@ -7,16 +7,11 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// تحديد المسار بذكاء: يتحقق تلقائياً أين يوجد index.html لمنع أي خطأ في المسارات
-const publicPath = fs.existsSync(path.join(__dirname, 'index.html')) 
-    ? __dirname 
-    : path.join(__dirname, '../');
-
-// تفعيل قراءة الملفات الثابتة والصفحة الرئيسية بناءً على المسار المكتشف
-app.use(express.static(publicPath));
+// تفعيل قراءة الواجهة وملفات الـ HTML لأن index.html بجانب server.js مباشرة
+app.use(express.static(__dirname));
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(publicPath, 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.use(express.json());
