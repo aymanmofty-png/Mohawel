@@ -9,7 +9,7 @@ const app = express();
 // تعديل المنفذ ليتوافق مع منصة Render ديناميكياً
 const PORT = process.env.PORT || 10000;
 
-app.use(express.static('public'));
+app.use(express.static(__dirname));
 app.use(fileUpload());
 
 app.post('/build-apk', async (req, res) => {
