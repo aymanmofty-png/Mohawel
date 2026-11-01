@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محول HTML إلى APK الخاص بي</title>
+    <style>
+        body { font-family: system-ui, sans-serif; background: #f0f4f8; padding: 20px; }
+        .box { max-width: 450px; margin: auto; background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #1d4ed8; }
+        .group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #1d4ed8; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 1rem; cursor: pointer; }
+        #status { margin-top: 15px; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>تحويل HTML إلى APK</h2>
+        <form id="buildForm">
+            <div class="group">
+                <label>اسم التطبيق:</label>
+                <input type="text" id="appName" name="appName" placeholder="مثال: تطبيق توفير" required>
+            </div>
+            <div class="group">
+                <label>اسم الحزمة (Package ID):</label>
+                <input type="text" id="pkgName" name="pkgName" value="com.mytools.app" required>
+            </div>
+            <div class="group">
+                <label>ملف الـ HTML:</label>
+                <input type="file" id="htmlFile" name="htmlFile" accept=".html" required>
+            </div>
+            <button type="submit">تحويل وإنشاء APK</button>
+        </form>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        document.getElementById('buildForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const status = document.getElementById('status');
+            status.style.color = '#333';
+            status.innerText = 'جاري بناء ملف APK... قد يستغرق ذلك دقيقة واحدة...';
+
+            const formData = new FormData(e.target);
+
+            try {
+                const response = await fetch('/build-apk', { method: 'POST', body: formData });
+                const result = await response.json();
+
+                if (result.success) {
+                    status.innerHTML = `<a href="${result.downloadUrl}" download style="color:green; font-size:1.1rem;">اضغط هنا لتحميل ملف APK جاهزاً</a>`;
+                } else {
+                    status.style.color = 'red';
+                    status.innerText = 'حدث خطأ: ' + (result.error || 'فشل التجميع');
+                }
+            } catch (err) {
+                status.style.color = 'red';
+                status.innerText = 'تعذر الاتصال بالخادم';
+            }
+        });
+    </script>
+</body>
+</html>
