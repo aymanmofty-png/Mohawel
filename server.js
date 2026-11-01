@@ -1,4 +1,3 @@
-
 const express = require('express');
 const fileUpload = require('express-fileupload');
 const { exec } = require('child_process');
@@ -6,7 +5,9 @@ const fs = require('fs-extra');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+
+// تعديل المنفذ ليتوافق مع منصة Render ديناميكياً
+const PORT = process.env.PORT || 10000;
 
 app.use(express.static('public'));
 app.use(fileUpload());
@@ -66,4 +67,5 @@ app.post('/build-apk', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => console.log(`الخادم يعمل على المنفذ ${PORT}`));
+// تشغيل الخادم مع تحديد '0.0.0.0' ليتوافق تماماً مع استضافة Render
+app.listen(PORT, '0.0.0.0', () => console.log(`الخادم يعمل على المنفذ ${PORT}`));
